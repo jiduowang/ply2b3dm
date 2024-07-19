@@ -13,6 +13,8 @@ def travel_folder(root_directory, data_directory, output_directory):
         # for file in files:
         #     file_path = os.path.join(root, file)
         #     print(file_path)
+        if root == data_directory:
+            continue
         process(root_directory, root, output_directory)
 
 
@@ -23,7 +25,7 @@ def travel_folder(root_directory, data_directory, output_directory):
 @param {string} output_directory the output directory
 '''
 def process(root_directory,dir_path, output_directory):
-    tmp = dir_path.split('/')
+    tmp = dir_path.split('\\')
     current_dir_name = tmp[-1]
     output_glb_directory = output_directory + "/" + current_dir_name + "_glb"
     if not os.path.isdir(output_glb_directory):
@@ -35,9 +37,10 @@ def process(root_directory,dir_path, output_directory):
             tmp = tmp.split('/')
             file_name = tmp[-1]
             if file_extension == ".ply":
-                bpy.ops.import_mesh.ply(filepath=file)
+                bpy.ops.import_mesh.ply(filepath=dir_path+'/'+file)
                 export_file = output_glb_directory + "/" + file_name + ".glb"
                 bpy.ops.export_scene.gltf(filepath=export_file, export_format='GLB')
+                print(1)
 
     #glb2b3dm
     output_b3dm_directory = output_directory + "/" + current_dir_name + "_b3dm"
@@ -49,7 +52,7 @@ def process(root_directory,dir_path, output_directory):
             tmp = tmp.split('/')
             file_name = tmp[-1]
             if file_extension == ".glb":
-                input_file = file
+                input_file = output_glb_directory + "/" + file
                 output_file = output_b3dm_directory + "/" + file_name + ".b3dm"
                 os.system("node " + root_directory + '/3d-tiles-tools/tools/bin/3d-tiles-tools.js glbToB3dm '+ input_file + ' ' + output_file)
 
@@ -71,8 +74,8 @@ if __name__=='__main__':
         os.mkdir(root_directory+"/output")
 
     #try:
-        # for file in os.listdir(current_argument):
-        #     travel_folder(root_directory, current_argument, root_directory+"/output")
+    # for file in os.listdir(current_argument):
+    #     travel_folder(root_directory, current_argument, root_directory+"/output")
     # except Exception as e:
     #     print(e)
     #     print("The file path is not a directory.")
